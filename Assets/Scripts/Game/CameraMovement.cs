@@ -16,6 +16,11 @@ public class CameraMovement : MonoBehaviour
 
     private void Update()
     {
+        MoveToTarget();
+    }
+
+    private void MoveToTarget()
+    {
         if (!_target) return;
 
         Vector3 targetPosition = _target.position + _offset;
