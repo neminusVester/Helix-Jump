@@ -6,6 +6,7 @@ public class LevelController : MonoBehaviour
 {
     [SerializeField] private List<CoreController> cores;
     [SerializeField] Transform spawnTransform;
+    [SerializeField] private Vector3 spawnLevelOffset = new Vector3(0f, -12f, 0f);
     private CanvasController _canvasController;
     private Vector3 _ballSpawnOffset = new Vector3(0.15f, -0.45f, -0.75f);
     private CoreController _currentCore;
@@ -47,19 +48,19 @@ public class LevelController : MonoBehaviour
     {
         if (_currentCore == null)
         {
-            _currentCore = Instantiate(cores[_canvasController.levelButtonIndex], spawnTransform.position, Quaternion.identity);
+            _currentCore = Instantiate(cores[_canvasController.levelButtonIndex], spawnTransform.position + spawnLevelOffset, Quaternion.identity);
         }
     }
 
     private void InstantiateNextLevel()
     {
         _canvasController.levelButtonIndex += 1;
-        _currentCore = Instantiate(cores[_canvasController.levelButtonIndex], spawnTransform.position, Quaternion.identity);
+        _currentCore = Instantiate(cores[_canvasController.levelButtonIndex], spawnTransform.position + spawnLevelOffset, Quaternion.identity);
     }
 
     private void DestroyCurrentLevel()
     {
-        if(_currentCore == null) return;
+        if (_currentCore == null) return;
         Destroy(_currentCore.gameObject);
         _currentCore = null;
     }

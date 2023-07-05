@@ -5,17 +5,35 @@ using UnityEngine;
 public class Ball : MonoBehaviour
 {
     private Rigidbody _ballRB;
+    private TrailRenderer _ballTrail;
     private Coroutine _jumpCoroutine;
     private float _jumpForce = 0.3f;
     private Vector3 _ballStartPosition;
+    private bool _fewerCollisionAccess = false;
+
 
     private void Start()
     {
         _ballRB = GetComponent<Rigidbody>();
+        _ballTrail = GetComponent<TrailRenderer>();
         _ballStartPosition = transform.position;
         GameEvents.Instance.OnLevelStarted += RespawnBall;
         GameEvents.Instance.OnLevelRestarted += RespawnBall;
         GameEvents.Instance.OnNextLevel += RespawnBall;
+        GameEvents.Instance.OnEnterFewerMode += FewerModeTrail;
+        GameEvents.Instance.OnEnterFewerMode += SetFewerCollision;
+    }
+
+    private void Update()
+    {
+        if (PassageSector.completedPassageCount >= 3)
+        {
+            GameEvents.Instance.StartFewerMode();
+        }
+        else
+        {
+            SetDefaulTrailColor();
+        }
     }
 
     private void OnDestroy()
@@ -23,30 +41,38 @@ public class Ball : MonoBehaviour
         GameEvents.Instance.OnLevelRestarted -= RespawnBall;
         GameEvents.Instance.OnNextLevel -= RespawnBall;
         GameEvents.Instance.OnLevelStarted -= RespawnBall;
+        GameEvents.Instance.OnEnterFewerMode -= FewerModeTrail;
+        GameEvents.Instance.OnEnterFewerMode -= SetFewerCollision;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (_fewerCollisionAccess)
+        {
+            Destroy(collision.transform.parent.gameObject);
+            _fewerCollisionAccess = false;
+        }
+        PassageSector.completedPassageCount = 0;
         if (_jumpCoroutine == null)
         {
             StartCoroutine(Jump());
         }
     }
 
-#if UNITY_EDITOR
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.B))
+    /* #if UNITY_EDITOR
+        private void Update()
         {
-            Debug.Log(_ballStartPosition);
-        }
+            if (Input.GetKeyDown(KeyCode.B))
+            {
+                Debug.Log(_ballStartPosition);
+            }
 
-        if(Input.GetKeyDown(KeyCode.G))
-        {
-            transform.position = _ballStartPosition;
+            if(Input.GetKeyDown(KeyCode.G))
+            {
+                transform.position = _ballStartPosition;
+            }
         }
-    }
-#endif
+    #endif */
 
     private IEnumerator Jump()
     {
@@ -67,6 +93,22 @@ public class Ball : MonoBehaviour
         transform.position = _ballStartPosition;
         _ballRB.useGravity = true;
         this.SetActive();
+    }
+
+    private void SetFewerCollision()
+    {
+        _fewerCollisionAccess = true;
+    }
+
+    private void FewerModeTrail()
+    {
+        Debug.Log("We are in fewer mode");
+        _ballTrail.startColor = Color.red;
+    }
+
+    private void SetDefaulTrailColor()
+    {
+        _ballTrail.startColor = Color.yellow;
     }
 
 }

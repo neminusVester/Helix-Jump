@@ -7,12 +7,14 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private LevelController levelController;
     [SerializeField] private CanvasController canvasController;
     [SerializeField] private CameraMovement cameraMovement;
+    [SerializeField] private ScoreManager scoreManager;
     [SerializeField] private Ball ball;
 
     private void Start()
     {
         levelController.Init(canvasController);
-        canvasController.Init();
+        scoreManager.Init();
+        canvasController.Init(scoreManager);
         ball.SetInactive();
         GameEvents.Instance.OnLevelStarted += InitCamera;
     }

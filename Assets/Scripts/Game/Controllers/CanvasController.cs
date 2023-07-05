@@ -2,10 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class CanvasController : MonoBehaviour
 {
     public int levelButtonIndex;
+    private ScoreManager _scoreManager;
+    private Text newScore;
+    [SerializeField] private TextMeshProUGUI playingScoreText;
+    [SerializeField] private TextMeshProUGUI levelScoreText;
 
     [Header("Panels")]
     [SerializeField] private GameObject losePanel;
@@ -24,13 +29,16 @@ public class CanvasController : MonoBehaviour
     [SerializeField] private Button mainMenuButton;
     [SerializeField] private Button[] levelButtons;
 
-    public void Init()
+    public void Init(ScoreManager scoreManager)
     {
+        _scoreManager = scoreManager;
         //Subscribes to events
         GameEvents.Instance.OnPlayerDie += PlayerLose;
         GameEvents.Instance.OnPlayerPaused += GamePause;
         GameEvents.Instance.OnTochedEnd += GameSuccessful;
+        GameEvents.Instance.OnTochedEnd += SetLevelScoreValue;
         GameEvents.Instance.OnNextLevel += PlayerSelectNextLevel;
+        GameEvents.Instance.OnPlatformPassed += SetPlayingScoreValue;
 
         //onClick for buttons
         for (int i = 0; i < levelButtons.Length; i++)
@@ -51,7 +59,9 @@ public class CanvasController : MonoBehaviour
         GameEvents.Instance.OnPlayerDie -= PlayerLose;
         GameEvents.Instance.OnPlayerPaused -= GamePause;
         GameEvents.Instance.OnTochedEnd -= GameSuccessful;
+        GameEvents.Instance.OnTochedEnd -= SetLevelScoreValue;
         GameEvents.Instance.OnNextLevel -= PlayerSelectNextLevel;
+        GameEvents.Instance.OnPlatformPassed -= SetPlayingScoreValue;
     }
 
 #if UNITY_EDITOR
@@ -73,7 +83,8 @@ public class CanvasController : MonoBehaviour
     private void StartButton()
     {
         GameEvents.Instance.SelectLevel();
-        startPanel.SetActive(false);
+        startPanel.SetInactive(); ;
+        playingPanel.SetActive();
         Time.timeScale = 1f;
     }
 
@@ -114,6 +125,7 @@ public class CanvasController : MonoBehaviour
         emptyLevelsPanel.SetInactive();
         nextLevelButton.SetActive();
         gameSuccessfulPanel.SetInactive();
+        playingPanel.SetInactive();
         startPanel.SetActive();
     }
 
@@ -142,6 +154,17 @@ public class CanvasController : MonoBehaviour
     {
         gameSuccessfulPanel.SetInactive();
         Time.timeScale = 1f;
+    }
+
+    private void SetPlayingScoreValue()
+    {
+        playingScoreText.text = _scoreManager.score.ToString();
+    }
+
+    private void SetLevelScoreValue()
+    {
+        levelScoreText.text = _scoreManager.levelScore.ToString();
+        playingScoreText.text = "0";
     }
 
 }
