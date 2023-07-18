@@ -8,6 +8,8 @@ public class SaveLoadData
     public SettingsData Settings;
     public StoredValue<int> PlayCount;
     public StoredValue<int> TutorialFinger;
+    public StoredValue<int> MaxScore;
+    public StoredValue<int> CurrentLevel;
 
     public SaveLoadData()
     {
@@ -16,5 +18,7 @@ public class SaveLoadData
         Settings = new SettingsData();
         PlayCount = new StoredValue<int>(0);
         TutorialFinger = new StoredValue<int>(0);
+        MaxScore = new StoredValue<int>(0);
+        CurrentLevel = new StoredValue<int>(1);
     }
 }

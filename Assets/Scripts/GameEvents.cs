@@ -12,8 +12,10 @@ public class GameEvents : MonoSingleton<GameEvents>
     public event Action OnLevelRestarted;
     public event Action OnNextLevel;
     public event Action OnLevelButtonPressed;
-    public event Action OnEnterFewerMode;
+    public event Action<bool> OnFewerMode;
     public event Action OnPlatformPassed;
+
+    //зробить цей івент з інтом.
 
     protected override void Awake()
     {
@@ -27,7 +29,15 @@ public class GameEvents : MonoSingleton<GameEvents>
     public void RestartLevel() => OnLevelRestarted?.Invoke();
     public void SelectedNextLevel() => OnNextLevel?.Invoke();
     public void PressLevelButton() => OnLevelButtonPressed?.Invoke();
-    public void StartFewerMode() => OnEnterFewerMode?.Invoke();
-    public void PlayerPassedPlatform() => OnPlatformPassed?.Invoke();
+    public void FewerModeChange(bool active) => OnFewerMode?.Invoke(active);
+    public void PlayerPassedPlatform(int i)
+    {
+        if (i == 3) FewerModeChange(true);
+        else FewerModeChange(false);
+
+        OnPlatformPassed?.Invoke();
+    }
+
+    //Зробить івент start fewer mode boolean.
 
 }

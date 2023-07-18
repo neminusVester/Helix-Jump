@@ -20,29 +20,18 @@ public class Ball : MonoBehaviour
         GameEvents.Instance.OnLevelStarted += RespawnBall;
         GameEvents.Instance.OnLevelRestarted += RespawnBall;
         GameEvents.Instance.OnNextLevel += RespawnBall;
-        GameEvents.Instance.OnEnterFewerMode += FewerModeTrail;
-        GameEvents.Instance.OnEnterFewerMode += SetFewerCollision;
+        GameEvents.Instance.OnFewerMode += CheckTrail;
+        GameEvents.Instance.OnFewerMode += SetFewerCollision;
     }
 
-    private void Update()
-    {
-        if (PassageSector.completedPassageCount >= 3)
-        {
-            GameEvents.Instance.StartFewerMode();
-        }
-        else
-        {
-            SetDefaulTrailColor();
-        }
-    }
 
     private void OnDestroy()
     {
         GameEvents.Instance.OnLevelRestarted -= RespawnBall;
         GameEvents.Instance.OnNextLevel -= RespawnBall;
         GameEvents.Instance.OnLevelStarted -= RespawnBall;
-        GameEvents.Instance.OnEnterFewerMode -= FewerModeTrail;
-        GameEvents.Instance.OnEnterFewerMode -= SetFewerCollision;
+        GameEvents.Instance.OnFewerMode -= CheckTrail;
+        GameEvents.Instance.OnFewerMode -= SetFewerCollision;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -95,12 +84,24 @@ public class Ball : MonoBehaviour
         this.SetActive();
     }
 
-    private void SetFewerCollision()
+    private void CheckTrail(bool active)
+    {
+        if (active)
+        {
+            FewerModeTrailColor();
+        }
+        else
+        {
+            SetDefaulTrailColor();
+        }
+    }
+
+    private void SetFewerCollision(bool active)
     {
         _fewerCollisionAccess = true;
     }
 
-    private void FewerModeTrail()
+    private void FewerModeTrailColor()
     {
         Debug.Log("We are in fewer mode");
         _ballTrail.startColor = Color.red;

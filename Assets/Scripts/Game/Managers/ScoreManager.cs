@@ -7,7 +7,6 @@ public class ScoreManager : MonoBehaviour
     private int _platformValue = 50;
     public int score = 0;
     public int levelScore = 0;
-    public int maxScore = 0;
 
     public void Init()
     {
@@ -29,6 +28,16 @@ public class ScoreManager : MonoBehaviour
     private void CountLevelScore()
     {
         levelScore = score;
+        if (levelScore > SLS.Data.MaxScore.Value)
+        {
+            SLS.Data.MaxScore.Value = levelScore;
+            SLS.Data.MaxScore.OnValueChanged += TestFunc;
+        }
         score = 0;
+    }
+
+    public void TestFunc(int t)
+    {
+        Debug.Log($"Max score: {SLS.Data.MaxScore.Value}");
     }
 }
